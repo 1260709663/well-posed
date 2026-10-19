@@ -1,6 +1,9 @@
 # Well-Posed（适定）
 
+[![CI](https://github.com/1260709663/well-posed/actions/workflows/ci.yml/badge.svg)](https://github.com/1260709663/well-posed/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](CHANGELOG.md)
+[![Agent Skills](https://img.shields.io/badge/Agent%20Skills-compatible-8A2BE2.svg)](https://agentskills.io/specification)
 
 > 一个"适定"的数学论文阅读工具：**读得准、问得对、不胡说**。
 
@@ -9,6 +12,9 @@
 输入一篇 PDE 论文 PDF，输出**排版好的中文 PDF**（LaTeX 编译，公式是排版级的，可打印、可批注）。
 
 ![预览](docs/preview.png)
+
+> **维护状态**：v1.1.0（2026-10-19）。变更见 [CHANGELOG](CHANGELOG.md)，参与方式见 [CONTRIBUTING](CONTRIBUTING.md)。
+> 发现某个模式在真实论文上失效，欢迎开 issue——**带论文名与页码的最小复现最有价值**。
 
 ---
 
@@ -133,22 +139,62 @@ $PY $SK/scripts/build_pdf.py note.tex --out note.pdf
 
 ```
 .
-├── SKILL.md                  # 入口：模式判定、5 步工作流、7 条质量红线
+├── SKILL.md                      # 入口：模式判定、5 步工作流、7 条质量红线
 ├── references/
-│   ├── mode-brief.md         # 模式一：速览的 9 段结构与写作禁忌
-│   ├── mode-deep.md          # 模式二：补证方法论（三类跳步 + 标记规则 + 排版红线）
-│   ├── mode-tutor.md         # 模式三：L1–L4 四层题库设计与提问风格
-│   └── sources.md            # 期刊分区/作者信息的检索规范 + 数学期刊分档参考
+│   ├── mode-brief.md             # 模式一：速览的 9 段结构与写作禁忌
+│   ├── mode-deep.md              # 模式二：补证方法论（三类跳步 + 标记规则 + 排版红线）
+│   ├── mode-tutor.md             # 模式三：按论文章节逐节出题的规范
+│   └── sources.md                # 期刊分区/作者信息的检索规范 + 数学期刊分档参考
 ├── assets/
-│   └── template.tex          # 中文 LaTeX 模板（四色语义盒 + 目录 + 页眉）
+│   └── template.tex              # 中文 LaTeX 模板（四色语义盒 + 目录 + 页眉）
 ├── scripts/
-│   ├── prep.py               # PDF 体检 / 文本抽取 / 页面渲染
-│   └── build_pdf.py          # xelatex 两遍编译，失败给可读报错
-└── docs/preview.png
+│   ├── prep.py                   # PDF 体检 / 文本抽取 / 页面渲染
+│   ├── build_pdf.py              # xelatex 两遍编译，失败给可读报错
+│   └── validate_skill.py         # 校验 SKILL.md 合规性与内部引用完整性
+├── .github/
+│   ├── workflows/ci.yml          # 规范校验 + 模板编译（ubuntu，fandol 字体）
+│   └── ISSUE_TEMPLATE/           # 问题与建议模板
+├── docs/preview.png
+├── Makefile                      # make check：校验 + 语法 + 模板编译
+├── CHANGELOG.md
+└── CONTRIBUTING.md
 ```
+
+---
+
+## 开发与维护
+
+```bash
+make check      # 规范校验 + py_compile + 模板编译，提交前跑这个
+make validate   # 只校验 SKILL.md
+make template   # 只编译模板
+```
+
+Windows 上没有 make 时：
+
+```bash
+python scripts/validate_skill.py .
+python -m py_compile scripts/prep.py scripts/build_pdf.py scripts/validate_skill.py
+python scripts/build_pdf.py assets/template.tex --out build/template.pdf
+```
+
+`scripts/validate_skill.py` 检查的是规范里那些**容易悄悄违反**的条款：
+
+| 检查项 | 为什么重要 |
+|---|---|
+| `name` 为 kebab-case 且等于目录名 | 规范硬要求；不一致会导致部分宿主找不到 skill |
+| `description` ≤ 1024 字符 | 超长会被截断，触发词就丢了 |
+| 顶层字段是否在规范白名单内 | 扩展字段应放进 `metadata`，否则其他宿主可能报错 |
+| 占位链接（`https://github.com/`） | 这种半填的链接会让徽章和安装命令全失效 |
+| `SKILL.md` 里引用的相对路径是否存在 | 引用了不存在的 `references/xx.md` 是静默失败 |
+| `SKILL.md` 篇幅 ≤ 500 行 | 规范建议正文 < 5000 tokens，超了要拆分 |
+
+CI 在每次 push / PR 时重跑同一套检查，并额外用 `fontset=fandol` 编译一次模板
+（Linux 上没有 Windows 字体，`fontset=windows` 会失败）。
 
 ---
 
 ## License
 
 MIT
+

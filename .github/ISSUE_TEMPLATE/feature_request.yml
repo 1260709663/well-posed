@@ -1,0 +1,29 @@
+name: 功能建议
+description: 新的模式、新的输出格式、或对现有规范的建议
+title: "[feat] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 你遇到的场景
+      description: 先说场景，再说方案。工具的价值在于解决具体的读论文困难。
+      placeholder: "读一篇 60 页的综述时，速览的骨架不够用，想看到每节之间的依赖关系图"
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 建议的做法
+    validations:
+      required: true
+  - type: dropdown
+    id: breaking
+    attributes:
+      label: 是否影响现有产出结构
+      options:
+        - 不影响（新增内容）
+        - 影响（改变了现有文件名或标记体系）
+        - 不确定
+    validations:
+      required: true

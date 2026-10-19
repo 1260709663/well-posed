@@ -1,0 +1,48 @@
+name: 报告问题
+description: 某个模式在真实论文上给出了错误或不合格的产出
+title: "[A/B/C] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        最有用的报告是**可复现的最小案例**：哪篇论文、哪一页、错在哪一句。
+        没有论文也可以，但要说明是"规范缺失"还是"执行跑偏"。
+  - type: dropdown
+    id: mode
+    attributes:
+      label: 涉及哪个模式
+      options:
+        - A 速览
+        - B 精读笔记
+        - C 导师提问
+        - 解析/编译（prep.py、build_pdf.py、模板）
+        - 其他
+    validations:
+      required: true
+  - type: input
+    id: paper
+    attributes:
+      label: 论文（标题 + arXiv/DOI，可选）
+      placeholder: "例：Potential Well and Exact Boundary Controllability…, arXiv:xxxx"
+  - type: textarea
+    id: what
+    attributes:
+      label: 现象
+      description: 具体错在哪。是定理陈述漏了假设、补证引用了不成立的不等式、还是题目问成了复述题？
+      placeholder: "笔记第 6 页，对应原文 p.12 的 Lemma 3.4：补证用了 Sobolev 嵌入，但原文只有 L² 假设，嵌入不成立"
+    validations:
+      required: true
+  - type: textarea
+    id: expect
+    attributes:
+      label: 期望的正确行为
+      placeholder: "应当标 [gap] 并说明缺的是什么条件，而不是硬补一个不成立的论证"
+    validations:
+      required: true
+  - type: textarea
+    id: log
+    attributes:
+      label: 相关输出（可选）
+      description: 编译日志、prep.py info 的 JSON、或产出片段
+      render: text

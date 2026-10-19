@@ -4,6 +4,9 @@ __pycache__/
 .pyc
 
 # LaTeX 中间产物
+build/
+template-ci.tex
+template-ci.pdf
 *.aux
 *.log
 *.out

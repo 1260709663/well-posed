@@ -1,13 +1,23 @@
 ---
 name: well-posed
 display_name: Well-Posed（适定）
-description: "Well-Posed｜数学 PDE 文献阅读器：输入一篇论文 PDF，输出排版好的中文 PDF（LaTeX 编译）。三种模式——速览（主要定理+论文骨架+方法+期刊水平+作者介绍）、精读笔记（补全跳过的证明步骤+核心参考文献）、导师提问（按论文章节逐节追问+参考答案）。Triggers on: 读这篇论文, 精读, 论文速览, 这篇 PDE 文章讲了什么, 帮我读文献, 生成精读笔记, 导师提问, paper brief, deep read, tutor questions, 期刊档次, 作者是谁. 仅限数学/PDE/分析类论文。"
-description_zh: "PDE 论文三模式精读：速览 / 精读补证 / 导师提问，输出 LaTeX 排版 PDF"
+description: "Well-Posed（适定）｜数学 PDE 文献阅读器：输入一篇论文 PDF，输出排版好的中文 PDF（LaTeX 编译）。三种模式——速览（主要定理+论文骨架+方法+期刊水平+作者介绍）、精读笔记（补全跳过的证明步骤+核心参考文献）、导师提问（按论文章节逐节追问+参考答案）。Triggers on: 读这篇论文, 精读, 论文速览, 这篇 PDE 文章讲了什么, 帮我读文献, 生成精读笔记, 导师提问, paper brief, deep read, tutor questions, 期刊档次, 作者是谁. 仅限数学/PDE/分析类论文。"
+description_zh: "PDE 论文三模式精读：速览 / 精读补证 / 导师提问（按节），输出 LaTeX 排版 PDF"
 category: 学术研究
 tags: PDE,数学,文献阅读,精读,LaTeX,PDF
-version: 1.0.0
-homepage: https://github.com/
+version: 1.1.0
+homepage: https://github.com/1260709663/well-posed
 license: MIT
+compatibility: "需要 Python 3.9+ 与 PyMuPDF；需要带 ctex 与 tcolorbox 的 xelatex（TinyTeX 或 TeX Live）；处理论文时需联网检索期刊与作者信息"
+metadata:
+  display_name: "Well-Posed（适定）"
+  description_zh: "PDE 论文三模式精读：速览 / 精读补证 / 导师提问（按节），输出 LaTeX 排版 PDF"
+  category: "学术研究"
+  tags: "PDE,数学,文献阅读,精读,LaTeX,PDF"
+  version: "1.1.0"
+  homepage: "https://github.com/1260709663/well-posed"
+  author: "1260709663"
+  spec: "https://agentskills.io/specification"
 ---
 
 # Well-Posed（适定）

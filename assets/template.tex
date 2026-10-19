@@ -1,0 +1,180 @@
+% !TEX program = xelatex
+% ============================================================
+%  well-posed 通用模板（源文件：assets/template.tex）
+%  用法：复制本文件到工作目录，只改「填写区」与正文，用 build_pdf.py 编译。
+%  不要改动导言区，除非确实需要新宏包（先 kpsewhich 确认已安装）。
+% ============================================================
+\documentclass[11pt,UTF8,fontset=windows,a4paper]{ctexart}
+
+\usepackage{amsmath,amssymb,amsthm,mathtools,bm}
+\usepackage{geometry}
+\geometry{left=2.4cm,right=2.4cm,top=2.8cm,bottom=2.4cm,headheight=22pt,headsep=0.5cm,footskip=1.1cm}
+\usepackage[most]{tcolorbox}
+\usepackage{enumitem}
+\usepackage{booktabs,array,longtable}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage[colorlinks=true,linkcolor=linkblue,urlcolor=linkblue,citecolor=linkblue]{hyperref}
+
+% ---------- 配色 ----------
+\definecolor{thmcolor}{RGB}{31,78,140}
+\definecolor{proofcolor}{RGB}{20,105,80}
+\definecolor{gapcolor}{RGB}{168,92,20}
+\definecolor{warncolor}{RGB}{152,42,52}
+\definecolor{notecolor}{RGB}{70,70,70}
+\definecolor{linkblue}{RGB}{20,70,150}
+
+% ---------- 页眉页脚 ----------
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\footnotesize\color{gray}\ShortTitle}
+\fancyhead[R]{\footnotesize\color{gray}\NoteMode}
+\fancyfoot[C]{\footnotesize\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{gray!40}\leaders\hrule height \headrulewidth\hfill}}
+
+\ctexset{
+  section/format = \Large\bfseries\color{thmcolor},
+  section/name = {},
+  section/number = \arabic{section},
+  subsection/format = \large\bfseries\color{thmcolor!85!black},
+  subsubsection/format = \normalsize\bfseries,
+}
+
+\setlist[itemize]{leftmargin=1.4em,itemsep=2pt,topsep=3pt,parsep=0pt}
+\setlist[enumerate]{leftmargin=1.7em,itemsep=2pt,topsep=3pt,parsep=0pt}
+\setlength{\parskip}{2pt}
+\linespread{1.12}
+
+% ---------- 语义化盒子 ----------
+% 原文定理：蓝
+\newtcolorbox{thmbox}[1]{enhanced,colback=thmcolor!4,colframe=thmcolor!70,
+  colbacktitle=thmcolor!88!black,coltitle=white,
+  boxrule=0.5pt,arc=1.5mm,left=3mm,right=3mm,top=1.8mm,bottom=1.8mm,
+  fonttitle=\bfseries\small,title={#1},breakable}
+% 补证：绿
+\newtcolorbox{proofbox}[1]{enhanced,colback=proofcolor!4,colframe=proofcolor!65,
+  colbacktitle=proofcolor!85!black,coltitle=white,
+  boxrule=0.5pt,arc=1.5mm,left=3mm,right=3mm,top=1.8mm,bottom=1.8mm,
+  fonttitle=\bfseries\small,title={#1},breakable}
+% 跳步/坑点：橙
+\newtcolorbox{gapbox}[1]{enhanced,colback=gapcolor!4,colframe=gapcolor!65,
+  colbacktitle=gapcolor!85!black,coltitle=white,
+  boxrule=0.5pt,arc=1.5mm,left=3mm,right=3mm,top=1.8mm,bottom=1.8mm,
+  fonttitle=\bfseries\small,title={#1},breakable}
+% 不确定性/风险：红
+\newtcolorbox{warnbox}[1]{enhanced,colback=warncolor!4,colframe=warncolor!60,
+  colbacktitle=warncolor!85!black,coltitle=white,
+  boxrule=0.5pt,arc=1.5mm,left=3mm,right=3mm,top=1.8mm,bottom=1.8mm,
+  fonttitle=\bfseries\small,title={#1},breakable}
+% 中性提示：灰
+\newtcolorbox{notebox}[1][]{enhanced,colback=black!2,colframe=black!25,
+  colbacktitle=black!60,coltitle=white,
+  boxrule=0.4pt,arc=1mm,left=3mm,right=3mm,top=1.5mm,bottom=1.5mm,
+  fonttitle=\bfseries\small,title={#1},breakable}
+
+% ---------- 目录格式（ctexart 默认一级缩进、二级带点线，此处改为常规样式）----------
+\makeatletter
+\renewcommand*\l@section[2]{%
+  \ifnum \c@tocdepth >\z@
+    \addpenalty\@secpenalty \addvspace{0.9em \@plus\p@}%
+    \setlength\@tempdima{1.6em}%
+    \begingroup
+      \parindent \z@ \rightskip \@pnumwidth \parfillskip -\@pnumwidth
+      \leavevmode \bfseries
+      \advance\leftskip\@tempdima \hskip -\leftskip
+      #1\nobreak\hfil \nobreak\hb@xt@\@pnumwidth{\hss #2}\par
+    \endgroup
+  \fi}
+\renewcommand*\l@subsection[2]{%
+  \ifnum \c@tocdepth >\@ne
+    \addvspace{0.35em \@plus\p@}%
+    \begingroup
+      \parindent \z@ \rightskip \@pnumwidth \parfillskip -\@pnumwidth
+      \leavevmode \normalfont
+      \advance\leftskip 3.2em \hskip -\leftskip
+      #1\nobreak\hfil \nobreak\hb@xt@\@pnumwidth{\hss #2}\par
+    \endgroup
+  \fi}
+\makeatother
+
+% ---------- 行内标记 ----------
+\newcommand{\yi}{\textcolor{gray}{[原文]}}
+\newcommand{\bz}{\textcolor{proofcolor}{[补证]}}
+\newcommand{\ts}{\textcolor{warncolor}{[推测]}}
+\newcommand{\gap}{\textcolor{gapcolor}{[gap]}}
+\newcommand{\kk}{\textcolor{gapcolor}{[坑]}}
+% 原文编号引用，如 \refo{Theorem 1.2}、\refo{(3.14)}
+\newcommand{\refo}[1]{\textsf{\small #1}}
+% 星号：★ 在 Latin Modern 里没有字形，必须走数学字体
+\newcommand{\BS}{\ensuremath{\bigstar}}
+% 展示公式：凡原文没有的编号，一律用 equation*，
+% 否则会被自动编成 (1)(2)，与原文的 (3.14) 这类编号混淆。
+
+% ============================================================
+%                        ↓↓↓  填 写 区  ↓↓↓
+% ============================================================
+\newcommand{\PaperTitle}{（论文标题）}
+\newcommand{\PaperAuthors}{（作者）}
+\newcommand{\PaperVenue}{（期刊 / arXiv 编号 / 年份）}
+\newcommand{\NoteMode}{（模式一 · 速览）}
+\newcommand{\NoteDate}{（生成日期）}
+\newcommand{\ShortTitle}{（短标题，不超过 40 字符）}
+
+\begin{document}
+
+% ---------- 封面 ----------
+\thispagestyle{empty}
+\begin{center}
+\vspace*{1.2cm}
+{\footnotesize\color{gray}\NoteMode}\\[0.9cm]
+{\LARGE\bfseries \PaperTitle}\\[0.5cm]
+{\large \PaperAuthors}\\[0.3cm]
+{\normalsize\color{notecolor}\PaperVenue}\\[1.0cm]
+\rule{0.62\textwidth}{0.4pt}\\[0.35cm]
+{\small \NoteDate}
+\vfill
+{\footnotesize\color{gray}
+本文件由 AI 辅助生成。定理编号、常数与假设已尽量与原文核对；\\
+凡标 \bz{} 者为补出的中间步骤，标 \ts{} 者为推断，标 \gap{} 者为无法补全之处。}
+\end{center}
+\newpage
+
+% ---------- 目录 ----------
+\tableofcontents
+\newpage
+
+% ============================================================
+%                        正 文 起 始
+% ============================================================
+
+\section*{示例：定理盒的写法}
+\addcontentsline{toc}{section}{示例：定理盒的写法}
+
+\begin{thmbox}{定理 1.2 \refo{(Theorem 1.2, p.4)}}
+设 $\Omega\subset\mathbb{R}^d$ 为有界光滑区域，$u_0\in H^1_0(\Omega)$。
+则对任意 $T>0$ 存在唯一弱解 $u\in L^\infty(0,T;H^1_0)\cap L^2(0,T;H^2)$，且
+\begin{equation}
+\|u(t)\|_{H^1}^2+\int_0^t\|u_s(s)\|^2\,ds\le C\|u_0\|_{H^1}^2 .
+\end{equation}
+\end{thmbox}
+
+\begin{proofbox}{补证：从 (3.7) 到 (3.9) 的能量估计}
+原文写 ``by standard energy estimates''。具体做法是取 $u_s$ 作测试函数……
+\begin{align}
+\tfrac12\frac{d}{dt}\|\nabla u\|^2+\|u_s\|^2
+&= -\int \nabla p\cdot\nabla u_s \;\le\; \tfrac12\|u_s\|^2 + C\|\nabla p\|^2 .
+\end{align}
+再对 $t$ 积分并用 Gronwall 不等式即得。
+\end{proofbox}
+
+\begin{gapbox}{跳步清单条目示例}
+\refo{p.7, l.12}：\emph{``a density argument''} —— 需要在 $C_c^\infty$ 上先证，再用 $\|\cdot\|_{W^{1,\infty}}$ 的弱下半连续性取极限；注意此处需 $d\le 4$ 才能保证嵌入。
+\end{gapbox}
+
+\begin{warnbox}{不确定处示例}
+作者引用的 \refo{[12]} 中的定理要求 $\partial\Omega\in C^2$，而本文只假设 Lipschitz；两者是否兼容，原文未说明。
+\end{warnbox}
+
+\end{document}

@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+.pyc
+
+# LaTeX 中间产物
+*.aux
+*.log
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+
+# 生成的笔记（论文内容不入库）
+*_reader/
+*.pdf
+!docs/*.pdf
+
+# 系统
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

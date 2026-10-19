@@ -14,6 +14,23 @@
 - `prep.py` 支持把整篇论文的定理陈述单独抽成清单（供模式 A 快速核对）
 - 增加一个最小示例论文（自有版权）用于端到端测试，接通 CI 的 e2e 检查
 
+## [1.1.1] - 2026-10-19
+
+### 修复
+
+- **`SKILL.md` 第 1 步写死了本机绝对路径**（`C:/Users/<用户名>/.workbuddy/binaries/python/versions/3.13.12/python.exe`
+  与 skill 目录的绝对路径）。任何人克隆后照抄命令都会失败。现改为
+  `PY=python` + `SK=<宿主告知的 skill 根目录>`，并给出多版本 Python 下的自检方法。
+- `prep.py` 缺 PyMuPDF 时原先抛出裸 ImportError 栈；现给出可操作提示
+  （装什么包、怎么换解释器）。
+
+### 新增
+
+- `validate_skill.py` 增加"写死的本机路径"检查：命中 `C:\Users\` 或 `/home/<name>/`
+  这类路径直接判错。这类问题是跨机器失效的头号原因，必须在 CI 拦住。
+- `SKILL.md` 环境依赖一节补充：Linux/macOS 上需把模板的 `fontset=windows`
+  改为 `fontset=fandol`，否则因缺字体编译失败。
+
 ## [1.1.0] - 2026-10-19
 
 ### 变更

@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/1260709663/well-posed/actions/workflows/ci.yml/badge.svg)](https://github.com/1260709663/well-posed/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.1.1-blue.svg)](CHANGELOG.md)
 [![Agent Skills](https://img.shields.io/badge/Agent%20Skills-compatible-8A2BE2.svg)](https://agentskills.io/specification)
 
 > 一个"适定"的数学论文阅读工具：**读得准、问得对、不胡说**。
@@ -13,7 +13,7 @@
 
 ![预览](docs/preview.png)
 
-> **维护状态**：v1.1.0（2026-10-19）。变更见 [CHANGELOG](CHANGELOG.md)，参与方式见 [CONTRIBUTING](CONTRIBUTING.md)。
+> **维护状态**：v1.1.1（2026-10-19）。变更见 [CHANGELOG](CHANGELOG.md)，参与方式见 [CONTRIBUTING](CONTRIBUTING.md)。
 > 发现某个模式在真实论文上失效，欢迎开 issue——**带论文名与页码的最小复现最有价值**。
 
 ---

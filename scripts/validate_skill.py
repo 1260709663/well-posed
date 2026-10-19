@@ -117,6 +117,17 @@ def check(root):
     for m in re.finditer(r"https?://github\.com/?(\s|$|\"|\))", text):
         errors.append("发现占位链接 https://github.com/（缺少仓库名）")
 
+    # --- 写死的本机路径（跨机器必失效） ---
+    abs_patterns = [
+        (r"[A-Za-z]:[\\/]Users[\\/]", "Windows 用户目录"),
+        (r"(?<![\w.:/])/(?:home|Users)/[A-Za-z_]", "Unix 用户目录"),
+    ]
+    for pat, label in abs_patterns:
+        for m in re.finditer(pat, body):
+            snippet = body[max(0, m.start() - 20):m.end() + 40].replace("\n", " ")
+            errors.append("SKILL.md 里有写死的%s路径（换机器即失效）：…%s…" % (label, snippet.strip()))
+            break  # 每种模式只报一次，避免刷屏
+
     # --- 字段名 ---
     for k in top:
         if k not in SPEC_FIELDS and k not in EXT_FIELDS:

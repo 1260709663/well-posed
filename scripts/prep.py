@@ -20,8 +20,16 @@ import sys
 
 try:
     import pymupdf as fitz
-except ImportError:  # 兼容旧版
-    import fitz
+except ImportError:  # 旧版包名
+    try:
+        import fitz
+    except ImportError:
+        sys.exit(
+            "缺少依赖 PyMuPDF，无法解析 PDF。\n"
+            "  安装：%s -m pip install pymupdf\n"
+            "  若本机有多个 Python，请用装了 PyMuPDF 的那个解释器运行本脚本\n"
+            "  （先用 `python -c \"import pymupdf\"` 确认）。" % sys.executable
+        )
 
 
 def _open(path):

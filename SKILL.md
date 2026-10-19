@@ -5,7 +5,7 @@ description: "Well-Posed（适定）｜数学 PDE 文献阅读器：输入一篇
 description_zh: "PDE 论文三模式精读：速览 / 精读补证 / 导师提问（按节），输出 LaTeX 排版 PDF"
 category: 学术研究
 tags: PDE,数学,文献阅读,精读,LaTeX,PDF
-version: 1.1.0
+version: 1.1.1
 homepage: https://github.com/1260709663/well-posed
 license: MIT
 compatibility: "需要 Python 3.9+ 与 PyMuPDF；需要带 ctex 与 tcolorbox 的 xelatex（TinyTeX 或 TeX Live）；处理论文时需联网检索期刊与作者信息"
@@ -14,7 +14,7 @@ metadata:
   description_zh: "PDE 论文三模式精读：速览 / 精读补证 / 导师提问（按节），输出 LaTeX 排版 PDF"
   category: "学术研究"
   tags: "PDE,数学,文献阅读,精读,LaTeX,PDF"
-  version: "1.1.0"
+  version: "1.1.1"
   homepage: "https://github.com/1260709663/well-posed"
   author: "1260709663"
   spec: "https://agentskills.io/specification"
@@ -58,10 +58,20 @@ metadata:
 ### 第 1 步：体检
 
 ```bash
-PY="C:/Users/王浩/.workbuddy/binaries/python/versions/3.13.12/python.exe"
-SK="C:/Users/王浩/.workbuddy/skills/well-posed"
+# SK = 本 skill 的根目录。宿主加载 skill 时会告知（"Base directory for this skill: ..."），
+#      直接用它；也可以用 `git clone` 下来的路径。不要写死用户名或版本号。
+SK="<skill 根目录，如 ~/.workbuddy/skills/well-posed>"
+
+# PY = 任意装了 PyMuPDF 的 Python 3.9+
+PY=python
 
 "$PY" "$SK/scripts/prep.py" info "<paper.pdf>"
+```
+
+若 `python` 不是你想要的那个（多版本共存常见），先确认再替换：
+
+```bash
+"$PY" -c "import pymupdf; print('ok')"   # 报错就换解释器，或 pip install pymupdf
 ```
 
 读返回的 `advice` 字段，据此决定策略：
@@ -167,9 +177,16 @@ cp "$SK/assets/template.tex" "<workdir>/01_brief.tex"
 
 ## 环境依赖
 
-- Python：`C:/Users/王浩/.workbuddy/binaries/python/versions/3.13.12/python.exe`（已装 PyMuPDF）
-- LaTeX：TinyTeX，`xelatex` + `ctex` + `tcolorbox`（已验证可用）
-- 若 xelatex 不在 PATH，`build_pdf.py` 会自动找 `D:\TinyTeX\bin\windows\xelatex.exe`
+- **Python 3.9+，且该解释器能 `import pymupdf`**。多版本共存时先验证：
+  `python -c "import pymupdf"`；失败则换解释器或 `pip install pymupdf`。
+- **LaTeX**：需要 `xelatex` + `ctex` + `tcolorbox`（TinyTeX 或 TeX Live 均可）。
+  - Windows 用 `fontset=windows`（模板默认）；Linux/macOS 编译前把模板里的
+    `fontset=windows` 改成 `fontset=fandol`（随 ctex 分发），否则会因缺字体失败。
+  - 若 `xelatex` 不在 PATH，`build_pdf.py` 会尝试常见安装路径（TinyTeX / MiKTeX / TeX Live）。
+- 联网：仅在需要核期刊分区、作者履历时使用；离线时相关内容应写"未检索到"。
+
+> **跨机器移植的硬规则**：`SKILL.md` 与所有脚本里**不许出现写死的用户主目录或
+> Python 绝对路径**。校验器会检查（见 `scripts/validate_skill.py`）。
 
 ## 脚本速查
 

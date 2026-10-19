@@ -5,7 +5,7 @@ description: "Well-Posed（适定）｜数学 PDE 文献阅读器：输入一篇
 description_zh: "PDE 论文三模式精读：速览 / 精读补证 / 导师提问（按节），输出 LaTeX 排版 PDF"
 category: 学术研究
 tags: PDE,数学,文献阅读,精读,LaTeX,PDF
-version: 1.2.0
+version: 1.2.1
 homepage: https://github.com/1260709663/well-posed
 license: MIT
 compatibility: "需要 Python 3.9+ 与 PyMuPDF；需要带 ctex 与 tcolorbox 的 xelatex（TinyTeX 或 TeX Live）；处理论文时需联网检索期刊与作者信息"
@@ -14,7 +14,7 @@ metadata:
   description_zh: "PDE 论文三模式精读：速览 / 精读补证 / 导师提问（按节），输出 LaTeX 排版 PDF"
   category: "学术研究"
   tags: "PDE,数学,文献阅读,精读,LaTeX,PDF"
-  version: "1.2.0"
+  version: "1.2.1"
   homepage: "https://github.com/1260709663/well-posed"
   author: "1260709663"
   spec: "https://agentskills.io/specification"

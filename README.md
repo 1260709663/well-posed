@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/1260709663/well-posed/actions/workflows/ci.yml/badge.svg)](https://github.com/1260709663/well-posed/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.2.1-blue.svg)](CHANGELOG.md)
 [![Agent Skills](https://img.shields.io/badge/Agent%20Skills-compatible-8A2BE2.svg)](https://agentskills.io/specification)
 
 > 一个"适定"的数学论文阅读工具：**读得准、问得对、不胡说**。
@@ -13,7 +13,7 @@
 
 ![预览](docs/preview.png)
 
-> **维护状态**：v1.2.0（2026-10-19）。变更见 [CHANGELOG](CHANGELOG.md)，参与方式见 [CONTRIBUTING](CONTRIBUTING.md)。
+> **维护状态**：v1.2.1（2026-10-19）。变更见 [CHANGELOG](CHANGELOG.md)，参与方式见 [CONTRIBUTING](CONTRIBUTING.md)。
 > 发现某个模式在真实论文上失效，欢迎开 issue——**带论文名与页码的最小复现最有价值**。
 
 ---
@@ -84,13 +84,21 @@ git clone https://github.com/<your-name>/well-posed.git .workbuddy/skills/well-p
 python -m pip install pymupdf
 
 # 补 LaTeX（按平台选一个）
-winget install --id=Distributions.TinyTeX          # Windows
-brew install --cask mactex-no-gui                  # macOS（或 brew install tectonic）
+winget install --id MiKTeX.MiKTeX                  # Windows（已验证此 ID）
+# 或 TinyTeX 官方脚本：irm https://yihui.org/tinytex/install-bin-windows.ps1 | iex
+brew install --cask mactex-no-gui                  # macOS
 sudo apt install texlive-xetex texlive-lang-chinese texlive-latex-extra   # Ubuntu
 ```
 
-TinyTeX 是最小安装，缺宏包时用 `tlmgr install tcolorbox booktabs enumitem fancyhdr` 补。
-自己已经装了 TeX Live 也可以，`doctor.py` 会顺带检查 `ctex` 等宏包在不在。
+TinyTeX 是最小安装，缺宏包时 `doctor.py` 会直接给出该跑的命令，例如：
+
+```
+tlmgr install ctex mathtools tcolorbox
+```
+
+自己已经装了 TeX Live 也可以，`doctor.py` 会用 `kpsewhich` 逐个检查 `ctex`、`tcolorbox`
+等 8 个必需宏包在不在。**注意 tectonic 不行**——它虽然也是 TeX 引擎，但 `build_pdf.py`
+调用的是 `xelatex`。
 
 ### 平台差异
 

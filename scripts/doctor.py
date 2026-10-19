@@ -32,21 +32,29 @@ TEX_CANDIDATES = [
     "/usr/local/texlive/2024/bin/x86_64-linux/xelatex",
     "/Library/TeX/texbin/xelatex",
 ]
+# .sty 文件名 → TeX Live / TinyTeX 的包名（用于生成 tlmgr 命令）
+PKG_NAME = {
+    "ctex.sty": "ctex", "tcolorbox.sty": "tcolorbox", "amsmath.sty": "amsmath",
+    "amsthm.sty": "amscls", "booktabs.sty": "booktabs", "enumitem.sty": "enumitem",
+    "fancyhdr.sty": "fancyhdr", "mathtools.sty": "mathtools",
+}
 
 INSTALL = {
     "python": [
-        "Windows: winget install Python.Python.3.12",
+        "Windows: winget install --id Python.Python.3.12",
         "macOS:   brew install python",
         "Ubuntu:  sudo apt install python3 python3-pip",
     ],
     "pymupdf": [
-        "python -m pip install pymupdf        # 或 pip install pymupdf",
+        "python -m pip install pymupdf",
     ],
+    # 只列真正能装出 xelatex 的方式。注意：tectonic 虽然是 TeX 引擎，
+    # 但本项目的 build_pdf.py 调用的是 xelatex，装了 tectonic 也跑不通。
     "latex": [
-        "Windows: winget install --id=Distributions.TinyTeX  (或用 TeX Live 安装器)",
-        "macOS:   brew install --cask mactex-no-gui   或  brew install tectonic",
+        "Windows: winget install --id MiKTeX.MiKTeX        (已验证该 ID 存在)",
+        "Windows: 或用 TinyTeX 官方脚本 → irm https://yihui.org/tinytex/install-bin-windows.ps1 | iex",
+        "macOS:   brew install --cask mactex-no-gui",
         "Ubuntu:  sudo apt install texlive-xetex texlive-lang-chinese texlive-latex-extra",
-        "任何平台: 只想要最小安装 → TinyTeX: https://yihui.org/tinytex/",
     ],
 }
 
@@ -134,10 +142,13 @@ def main():
                       "语义盒改为文字标记，交付文件名用 .md。")
         if not tex["xelatex"]:
             advice.append("找不到 xelatex。")
+            install += INSTALL["latex"]
         elif tex["missing"]:
-            advice.append("缺少宏包：%s（TinyTeX 可用 tlmgr install 补齐）"
-                          % ", ".join(tex["missing"]))
-        install += INSTALL["latex"]
+            # 已装 TeX 但缺宏包：给可直接执行的补齐命令，别让用户自己查包名
+            pkgs = sorted({PKG_NAME.get(m, m.replace(".sty", "")) for m in tex["missing"]})
+            advice.append("已装 xelatex，但缺少宏包：%s" % ", ".join(tex["missing"]))
+            install.append("tlmgr install %s        # TinyTeX / TeX Live 通用" % " ".join(pkgs))
+            install.append("MiKTeX 用户可不手动补：编译时会自动下载缺失宏包")
     else:
         advice.append("环境完整，可产出 PDF。")
 

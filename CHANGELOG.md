@@ -14,6 +14,22 @@
 - `prep.py` 支持把整篇论文的定理陈述单独抽成清单（供模式 A 快速核对）
 - 增加一个最小示例论文（自有版权）用于端到端测试，接通 CI 的 e2e 检查
 
+## [1.2.1] - 2026-10-19
+
+### 修复
+
+- **安装命令有两条是错的**（1.2.0 里写的）：
+  - `winget install --id=Distributions.TinyTeX` —— winget 里没有这个 ID
+    （实测 `winget search` 查不到 TinyTeX 与 TeX Live）。改为已核实的
+    `winget install --id MiKTeX.MiKTeX`，另附 TinyTeX 官方脚本。
+  - `brew install tectonic` —— tectonic 不是 `xelatex`，而 `build_pdf.py` 调用的是
+    `xelatex`，装了也跑不通。已删除该建议并在 README 里显式说明原因。
+- **缺宏包时不给具体命令**。原先只说"可用 tlmgr install 补齐"，用户得自己查包名。
+  现在按 `.sty → 包名` 映射生成可直接粘贴的命令，例如
+  `tlmgr install ctex mathtools tcolorbox`；并注明 MiKTeX 会自动下载、无需手动补。
+- `amsthm.sty` 的包名映射修正为 `amscls`（原来错误地映射到 `amsmath`，
+  照抄那条命令并不能补上 amsthm）。
+
 ## [1.2.0] - 2026-10-19
 
 ### 新增

@@ -106,19 +106,23 @@ def cmd_info(args):
     thin = [x["p"] for x in per_page if x["chars"] < 200]
     scanned = len(thin) > max(3, npages * 0.5)
 
-    # 双栏启发式：多数文本块宽度小于页宽的 55%
-    wide = 0
-    narrow = 0
+    # 版式启发式：看**页宽中线上有多少字**。
+    # 双栏在中缝留白，中线附近的词很少；单栏的正文必然压在中线上。
+    # 实测（4 篇样张）：双栏 0.13，单栏 0.18–0.24，故阈值取 0.16。
+    # 注意：这只是启发式，两头都有误判可能，不要把布尔值当事实；
+    # JSON 里同时给出原始比值 gutter_ratio，便于人自己判断。
+    mid_words = 0
+    all_words = 0
     for i in range(min(npages, 6)):
         page = doc[i]
         w = page.rect.width or 1
-        for b in page.get_text("blocks"):
-            bw = b[2] - b[0]
-            if bw > w * 0.62:
-                wide += 1
-            elif bw < w * 0.55:
-                narrow += 1
-    two_col = narrow > 2 * max(wide, 1)
+        for wd in page.get_text("words"):
+            all_words += 1
+            c = (wd[0] + wd[2]) / 2 / w
+            if 0.44 <= c <= 0.56:
+                mid_words += 1
+    gutter_ratio = round(mid_words / max(all_words, 1), 3)
+    two_col = bool(all_words >= 150 and gutter_ratio < 0.16)
 
     toc = []
     try:
@@ -143,6 +147,7 @@ def cmd_info(args):
             "scanned_likely": scanned,
         },
         "two_column_likely": two_col,
+        "column_gutter_ratio": gutter_ratio,
         "math_text_suspect": math_check["suspect"],
         "math_check": math_check,
         "per_page": per_page,
@@ -159,7 +164,10 @@ def cmd_info(args):
     if replacement > 30:
         result["advice"].append("替换字符较多，字体映射异常：公式与符号务必以渲染图为准。")
     if two_col:
-        result["advice"].append("疑似双栏排版：文本抽取可能串行，公式必须渲染核对。")
+        result["advice"].append(
+            "疑似双栏排版（中线词占比 %.2f，阈值 0.16）：文本抽取可能串行，"
+            "公式与跨栏的定理陈述必须渲染核对。该判断是启发式，若肉眼是单栏可忽略。"
+            % gutter_ratio)
     print(json.dumps(result, ensure_ascii=False, indent=2))
     doc.close()
 

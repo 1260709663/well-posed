@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/1260709663/well-posed/actions/workflows/ci.yml/badge.svg)](https://github.com/1260709663/well-posed/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-1.2.1-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)](CHANGELOG.md)
 [![Agent Skills](https://img.shields.io/badge/Agent%20Skills-compatible-8A2BE2.svg)](https://agentskills.io/specification)
 
 > 一个"适定"的数学论文阅读工具：**读得准、问得对、不胡说**。
@@ -13,7 +13,7 @@
 
 ![预览](docs/preview.png)
 
-> **维护状态**：v1.2.1（2026-10-19）。变更见 [CHANGELOG](CHANGELOG.md)，参与方式见 [CONTRIBUTING](CONTRIBUTING.md)。
+> **维护状态**：v1.3.0（2026-10-20）。变更见 [CHANGELOG](CHANGELOG.md)，参与方式见 [CONTRIBUTING](CONTRIBUTING.md)。
 > 发现某个模式在真实论文上失效，欢迎开 issue——**带论文名与页码的最小复现最有价值**。
 
 ---
@@ -55,15 +55,42 @@
 
 ## 安装
 
-本工具是一个 agent skill，靠 `SKILL.md` 被识别。直接克隆到 skills 目录：
+本工具是一个 agent skill，靠 `SKILL.md` 被识别。克隆到 skills 目录即可：
 
 ```bash
 # 用户级（所有项目可用）
-git clone https://github.com/<your-name>/well-posed.git ~/.workbuddy/skills/well-posed
+git clone https://github.com/1260709663/well-posed.git ~/.workbuddy/skills/well-posed
 
 # 或项目级
-git clone https://github.com/<your-name>/well-posed.git .workbuddy/skills/well-posed
+git clone https://github.com/1260709663/well-posed.git .workbuddy/skills/well-posed
 ```
+
+> **用「Download ZIP」的话**，解压后目录会叫 `well-posed-main`。规范要求
+> `SKILL.md` 里的 `name` 与**所在目录名**一致，所以请把目录改名为 `well-posed`，
+> 否则部分宿主找不到这个 skill。
+
+## 五分钟验证：先确认装对了
+
+克隆完别急着喂自己的论文，先拿自带的样张跑一遍：
+
+```bash
+cd ~/.workbuddy/skills/well-posed
+
+python scripts/doctor.py                    # ① 本机是哪一档
+python scripts/prep.py info examples/toy-paper.pdf   # ② 解析是否正常
+python scripts/build_pdf.py assets/template.tex --out build/template.pdf  # ③ 能否排版
+```
+
+② 的预期输出（3 页的虚构样张）：
+
+```
+pages: 3   scanned_likely: false   math_text_suspect: false   two_column_likely: false
+```
+
+三项都对，说明环境没问题，可以去读自己的论文了。
+若 ③ 失败但 ①② 正常，就是缺 LaTeX——不影响使用，只是产出会退化成 Markdown
+（见下面的档位表）。`examples/toy-paper.pdf` 是什么、为什么会有它，见
+[examples/README.md](examples/README.md)。
 
 ## 依赖：三种档位，缺东西也能用
 
@@ -189,6 +216,9 @@ $PY $SK/scripts/build_pdf.py note.tex --out note.pdf
 ├── .github/
 │   ├── workflows/ci.yml          # 规范校验 + 模板编译（ubuntu，fandol 字体）
 │   └── ISSUE_TEMPLATE/           # 问题与建议模板
+├── examples/
+│   ├── toy-paper.tex/.pdf        # 3 页虚构样张，用来验证管线跑通
+│   └── README.md
 ├── docs/preview.png
 ├── Makefile                      # make check：校验 + 语法 + 模板编译
 ├── CHANGELOG.md

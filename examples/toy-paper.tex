@@ -1,0 +1,192 @@
+% !TEX program = xelatex
+% 示例论文：用于验证 well-posed 的整条管线能否跑通。
+% 声明：这不是一篇真实发表的论文，是为了测试而写的短文；
+% 其中的数学结论是正确的、可手工验证的，但没有任何研究价值。
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=2.6cm]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue]{hyperref}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{remark}{Remark}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+
+\title{Exponential Decay for a Damped Wave Equation:\\ A Minimal Test Fixture}
+\author{Test Fixture$^{\dagger}$\\
+\small $^{\dagger}$This is \emph{not} a published paper. It exists only to exercise the\\
+\small well-posed pipeline end to end. The mathematics below is correct but elementary.}
+\date{2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We consider the damped wave equation $u_{tt}+u_{t}-u_{xx}=0$ on a bounded interval
+with homogeneous Dirichlet boundary conditions. We give a self-contained proof that the
+energy decays exponentially, with an explicit rate obtained from a multiplier identity.
+The note is written as a test fixture: it is short, it contains exactly one skipped step
+(so that a reader may practice filling it in), and its numbers can be checked by hand.
+\end{abstract}
+
+\section{Introduction and main result}
+
+Let $L>0$ and $\Omega=(0,L)$. Consider
+\begin{equation}
+u_{tt}+u_{t}-u_{xx}=0,\qquad x\in(0,L),\ t>0,
+\label{eq:model}
+\end{equation}
+with Dirichlet boundary conditions
+\begin{equation}
+u(0,t)=u(L,t)=0,\qquad t\ge 0,
+\label{eq:bc}
+\end{equation}
+and initial data
+\begin{equation}
+u(x,0)=u_{0}(x),\qquad u_{t}(x,0)=u_{1}(x).
+\label{eq:ic}
+\end{equation}
+
+The energy of a solution is
+\begin{equation}
+E(t)=\frac12\int_{0}^{L}\bigl(u_{t}^{2}+u_{x}^{2}\bigr)\,dx .
+\label{eq:energy}
+\end{equation}
+
+\begin{proposition}[Energy identity]
+\label{prop:energy}
+Let $u$ be a sufficiently smooth solution of \eqref{eq:model}--\eqref{eq:bc}.
+Then
+\begin{equation}
+\frac{d}{dt}E(t)=-\int_{0}^{L}u_{t}^{2}\,dx\le 0 .
+\label{eq:dissipation}
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+Multiply \eqref{eq:model} by $u_{t}$ and integrate over $(0,L)$:
+\[
+\int_{0}^{L}u_{tt}u_{t}\,dx+\int_{0}^{L}u_{t}^{2}\,dx-\int_{0}^{L}u_{xx}u_{t}\,dx=0 .
+\]
+The first term is $\frac12\frac{d}{dt}\int u_{t}^{2}$, and integration by parts in the
+third term, together with \eqref{eq:bc}, gives
+$-\int u_{xx}u_{t}=\int u_{x}u_{xt}=\frac12\frac{d}{dt}\int u_{x}^{2}$.
+Collecting terms yields \eqref{eq:dissipation}.
+\end{proof}
+
+Proposition~\ref{prop:energy} shows that $E$ is nonincreasing, but it does not by itself
+give a rate. The main result of this note is the following.
+
+\begin{theorem}[Exponential decay]
+\label{thm:decay}
+Let $u$ solve \eqref{eq:model}--\eqref{eq:ic} with
+$(u_{0},u_{1})\in H^{2}(\Omega)\cap H^{1}_{0}(\Omega)\times H^{1}_{0}(\Omega)$.
+Then there exist constants $C_{1}\ge 1$ and $\mu>0$, depending only on $L$, such that
+\begin{equation}
+E(t)\le C_{1}\,e^{-\mu t}E(0),\qquad t\ge 0 .
+\label{eq:decay}
+\end{equation}
+\end{theorem}
+
+\begin{remark}
+The proof below is the classical multiplier argument. It is included in full because the
+constants are explicit and can be checked with a pencil; readers are invited to verify
+that the choice \eqref{eq:eps} below is legitimate.
+\end{remark}
+
+\section{Proof of Theorem~\ref{thm:decay}}
+
+Define the auxiliary functional
+\begin{equation}
+F(t)=\int_{0}^{L}u\,u_{t}\,dx+\frac12\int_{0}^{L}u^{2}\,dx .
+\label{eq:F}
+\end{equation}
+
+\begin{lemma}
+\label{lem:F}
+Along solutions of \eqref{eq:model}--\eqref{eq:bc},
+\begin{equation}
+F'(t)=\int_{0}^{L}u_{t}^{2}\,dx-\int_{0}^{L}u_{x}^{2}\,dx .
+\label{eq:Fprime}
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Differentiating \eqref{eq:F} and using \eqref{eq:model} in the form
+$u_{tt}=u_{xx}-u_{t}$,
+\begin{align*}
+F'(t)&=\int_{0}^{L}\bigl(u_{t}^{2}+u\,u_{tt}\bigr)dx+\int_{0}^{L}u\,u_{t}\,dx\\
+&=\int_{0}^{L}u_{t}^{2}\,dx+\int_{0}^{L}u\,(u_{xx}-u_{t})\,dx+\int_{0}^{L}u\,u_{t}\,dx\\
+&=\int_{0}^{L}u_{t}^{2}\,dx-\int_{0}^{L}u_{x}^{2}\,dx ,
+\end{align*}
+where the boundary term $\bigl[u\,u_{x}\bigr]_{0}^{L}$ vanishes by \eqref{eq:bc}
+and the two terms involving $u\,u_{t}$ cancel.
+\end{proof}
+
+Now set, for $\varepsilon>0$ to be chosen,
+\begin{equation}
+E_{\varepsilon}(t)=E(t)+\varepsilon F(t).
+\label{eq:Eeps}
+\end{equation}
+
+Combining \eqref{eq:dissipation} and \eqref{eq:Fprime},
+\begin{equation}
+E_{\varepsilon}'(t)=-(1-\varepsilon)\int_{0}^{L}u_{t}^{2}\,dx-\varepsilon\int_{0}^{L}u_{x}^{2}\,dx .
+\label{eq:Eepsprime}
+\end{equation}
+
+It remains to compare $E_{\varepsilon}$ with $E$. By the Cauchy--Schwarz inequality and
+the Poincaré inequality one obtains
+\begin{equation}
+|F(t)|\le C_{0}E(t),\qquad C_{0}=C_{0}(L),
+\label{eq:equiv}
+\end{equation}
+so that for $\varepsilon$ small enough,
+\begin{equation}
+(1-\varepsilon C_{0})E(t)\le E_{\varepsilon}(t)\le(1+\varepsilon C_{0})E(t).
+\label{eq:compare}
+\end{equation}
+
+Choose
+\begin{equation}
+0<\varepsilon<\frac{1}{2C_{0}},\qquad \varepsilon<\frac12 .
+\label{eq:eps}
+\end{equation}
+Then \eqref{eq:Eepsprime} gives, for some $c=c(\varepsilon)>0$,
+$E_{\varepsilon}'\le-cE$, and by \eqref{eq:compare},
+$E_{\varepsilon}'\le-\frac{c}{1+\varepsilon C_{0}}E_{\varepsilon}$.
+Gronwall's inequality yields
+\[
+E_{\varepsilon}(t)\le e^{-\mu t}E_{\varepsilon}(0),\qquad
+\mu=\frac{c}{1+\varepsilon C_{0}},
+\]
+and applying \eqref{eq:compare} once more gives \eqref{eq:decay} with
+$C_{1}=(1+\varepsilon C_{0})/(1-\varepsilon C_{0})$.
+
+\begin{remark}
+The estimate \eqref{eq:equiv} is the only place where the boundary conditions enter the
+argument beyond \eqref{eq:dissipation}; without \eqref{eq:bc} the Poincaré inequality is
+unavailable and $F$ cannot be dominated by $E$.
+\end{remark}
+
+\section{Conclusion}
+
+The proof uses three ingredients: an energy identity
+(Proposition~\ref{prop:energy}), a multiplier identity producing a functional whose
+derivative has the opposite sign (Lemma~\ref{lem:F}), and an equivalence estimate that
+turns the modified energy into the original one. This is the same scheme used for
+variable-coefficient and higher-dimensional versions of \eqref{eq:model}.
+
+\begin{thebibliography}{9}
+\bibitem{Komornik} V.~Komornik, \emph{Exact Controllability and Stabilization: The
+Multiplier Method}, Masson/Wiley, 1994.
+\bibitem{Lions} J.-L. Lions, \emph{Contrôlabilité exacte, perturbations et stabilisation
+de systèmes distribués}, Masson, 1988.
+\bibitem{Zuazua} E.~Zuazua, Exponential decay for the semilinear wave equation with
+locally distributed damping, \emph{Comm. PDE} 15 (1990), 205--235.
+\end{thebibliography}
+
+\end{document}

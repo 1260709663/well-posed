@@ -5,7 +5,7 @@ description: "Well-Posed（适定）｜数学 PDE 文献阅读器：输入一篇
 description_zh: "PDE 论文三模式精读：速览 / 精读补证 / 导师提问（按节），输出 LaTeX 排版 PDF"
 category: 学术研究
 tags: PDE,数学,文献阅读,精读,LaTeX,PDF
-version: 1.2.1
+version: 1.3.0
 homepage: https://github.com/1260709663/well-posed
 license: MIT
 compatibility: "需要 Python 3.9+ 与 PyMuPDF；需要带 ctex 与 tcolorbox 的 xelatex（TinyTeX 或 TeX Live）；处理论文时需联网检索期刊与作者信息"
@@ -14,7 +14,7 @@ metadata:
   description_zh: "PDE 论文三模式精读：速览 / 精读补证 / 导师提问（按节），输出 LaTeX 排版 PDF"
   category: "学术研究"
   tags: "PDE,数学,文献阅读,精读,LaTeX,PDF"
-  version: "1.2.1"
+  version: "1.3.0"
   homepage: "https://github.com/1260709663/well-posed"
   author: "1260709663"
   spec: "https://agentskills.io/specification"
@@ -46,10 +46,29 @@ metadata:
 
 ## 工作流
 
-### 第 0 步：环境自检（先做，决定后面怎么走）
+### 第 0 步：定义路径与环境自检（先做，决定后面怎么走）
+
+先确定两个变量，后面所有命令都用它们：
+
+```bash
+# SK = 本 skill 的根目录。宿主加载 skill 时会告知（"Base directory for this skill: ..."），
+#      直接用它；也可以用 git clone 下来的路径。不要写死用户名或版本号。
+SK="<skill 根目录，如 ~/.workbuddy/skills/well-posed>"
+
+# PY = 任意装了 PyMuPDF 的 Python 3.9+
+PY=python
+```
+
+然后自检：
 
 ```bash
 "$PY" "$SK/scripts/doctor.py"          # 人说人话；加 --json 给机器读
+```
+
+若 `python` 不是你想要的那个（多版本共存常见），先确认再替换：
+
+```bash
+"$PY" -c "import pymupdf; print('ok')"   # 报错就换解释器，或 pip install pymupdf
 ```
 
 **跑不起来本身就是信息**：连 `python` 都没有 → 走 `host-read-only` 档（见下表）。
@@ -96,27 +115,18 @@ metadata:
 
 ### 第 2 步：体检
 
+（`PY` / `SK` 沿用第 0 步，无需重新定义。）
+
 ```bash
-# SK = 本 skill 的根目录。宿主加载 skill 时会告知（"Base directory for this skill: ..."），
-#      直接用它；也可以用 `git clone` 下来的路径。不要写死用户名或版本号。
-SK="<skill 根目录，如 ~/.workbuddy/skills/well-posed>"
-
-# PY = 任意装了 PyMuPDF 的 Python 3.9+
-PY=python
-
 "$PY" "$SK/scripts/prep.py" info "<paper.pdf>"
-```
-
-若 `python` 不是你想要的那个（多版本共存常见），先确认再替换：
-
-```bash
-"$PY" -c "import pymupdf; print('ok')"   # 报错就换解释器，或 pip install pymupdf
 ```
 
 读返回的 `advice` 字段，据此决定策略：
 
 - `scanned_likely: true` → 无文本层，**所有页都要 render + 视觉读**，先告诉用户"这份是扫描件，会慢一些"。
 - `two_column_likely: true` → 文本抽取会串行，**公式一律以渲染图为准**。
+  这是启发式（判据是"页宽中线上有多少字"，见 `column_gutter_ratio`，阈值 0.16），
+  余量不厚：**若肉眼一看就是单栏，可以忽略这个字段**。
 - `replacement_chars` 多 → 字体映射坏了，符号只能靠看图。
 - **`math_text_suspect: true` → 最危险的情况**：文本层看着是正常英文，但数学符号编码是错的。典型症状：
 

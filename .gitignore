@@ -19,6 +19,7 @@ template-ci.pdf
 *_reader/
 *.pdf
 !docs/*.pdf
+!examples/*.pdf
 
 # 系统
 .DS_Store

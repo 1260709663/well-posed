@@ -40,6 +40,11 @@ jobs:
           python -m pip install --quiet pymupdf
           python scripts/prep.py --help
 
+      - name: 端到端冒烟：对示例论文跑体检并断言关键字段
+        run: |
+          python scripts/prep.py info examples/toy-paper.pdf > info.json
+          python -c "import json;d=json.load(open('info.json'));assert d['pages']==3,d['pages'];assert d['text_layer']['scanned_likely'] is False;assert d['math_text_suspect'] is False;assert d['two_column_likely'] is False;print('示例论文体检通过 pages=%d gutter=%.3f'%(d['pages'],d['column_gutter_ratio']))"
+
   latex:
     name: 模板编译
     runs-on: ubuntu-latest

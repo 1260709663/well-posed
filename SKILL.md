@@ -5,7 +5,7 @@ description: "Well-Posed（适定）｜数学 PDE 文献阅读器：输入一篇
 description_zh: "PDE 论文三模式精读：速览 / 精读补证 / 导师提问（按节），输出 LaTeX 排版 PDF"
 category: 学术研究
 tags: PDE,数学,文献阅读,精读,LaTeX,PDF
-version: 1.1.1
+version: 1.2.0
 homepage: https://github.com/1260709663/well-posed
 license: MIT
 compatibility: "需要 Python 3.9+ 与 PyMuPDF；需要带 ctex 与 tcolorbox 的 xelatex（TinyTeX 或 TeX Live）；处理论文时需联网检索期刊与作者信息"
@@ -14,7 +14,7 @@ metadata:
   description_zh: "PDE 论文三模式精读：速览 / 精读补证 / 导师提问（按节），输出 LaTeX 排版 PDF"
   category: "学术研究"
   tags: "PDE,数学,文献阅读,精读,LaTeX,PDF"
-  version: "1.1.1"
+  version: "1.2.0"
   homepage: "https://github.com/1260709663/well-posed"
   author: "1260709663"
   spec: "https://agentskills.io/specification"
@@ -46,16 +46,55 @@ metadata:
 
 ## 工作流
 
-### 第 0 步：定位与建目录
+### 第 0 步：环境自检（先做，决定后面怎么走）
+
+```bash
+"$PY" "$SK/scripts/doctor.py"          # 人说人话；加 --json 给机器读
+```
+
+**跑不起来本身就是信息**：连 `python` 都没有 → 走 `host-read-only` 档（见下表）。
+
+三种档位，对应三种完全不同的干法：
+
+| 档位 | 条件 | 怎么干 | 交付 |
+|---|---|---|---|
+| `full` | Python + PyMuPDF + xelatex + 宏包齐全 | 正常流程，LaTeX 排版 | `.pdf` |
+| `markdown-only` | 有 Python + PyMuPDF，缺 LaTeX | **先照常解析**，正文写成 Markdown | `.md` |
+| `host-read-only` | 连 PyMuPDF 都没有 | **不用脚本**，直接用宿主能力读 PDF | `.md` |
+
+**必须在动手前把档位告诉用户**，一句话即可，例如：
+"这台机器没有 LaTeX，我会产出 Markdown 笔记；想要排版好的 PDF 可以装 TinyTeX（我给命令）。"
+不要让用户等到最后才发现拿不到 PDF。
+
+#### `markdown-only` 的写法（结构不变，只换外壳）
+
+- 文件名改成 `01_brief.md` / `02_deepread.md` / `03_tutor.md`。
+- 标题层级照旧（`#` 对应 `\section`，`##` 对应 `\subsection`）。
+- 行内公式 `$...$`，行间公式独立成段用 `$$...$$`。
+- 语义盒降级为**文字标记**，保留原意：
+  `> **【定理 1.2】**（原文 p.4）` / `> **【补证】** …` / `> **【坑】** …` / `> **【不确定】** …`
+- 表格用 Markdown 表格；跨页长表拆成两张并注明"（续）"。
+- 目录手写一个列表即可，不要假装有页码。
+- 文末加一行：`> 未编译为 PDF：本机缺 LaTeX。安装后可用 scripts/build_pdf.py 重新排版。`
+
+#### `host-read-only` 的写法（没有 Python 时）
+
+- **不能跑 `prep.py`**，所以拿不到 `math_text_suspect` 这个关键判断。
+  直接用宿主自带的 PDF 阅读能力读，但必须**默认按"公式不可信"处理**：
+  定理陈述、常数、指标一律以页面视觉内容为准，不要从文本层推。
+- 抽不了页码标记，引用原文位置时用"第 X 页 / §Y"这种粗粒度写法，并说明未核对页码。
+- 同样输出 Markdown，并明确告知用户：装 PyMuPDF 后可以升级为带检测的完整流程。
+
+### 第 1 步：定位与建目录
 
 ```
 工作目录 = <PDF 所在目录>/<PDF 主名>_reader/
 ```
 
-所有中间文件（页面图、抽取文本、.tex）放这里，最终 PDF 也放这里。
+所有中间文件（页面图、抽取文本、.tex）放这里，最终成品也放这里。
 **保留 .tex**：用户可能要改。
 
-### 第 1 步：体检
+### 第 2 步：体检
 
 ```bash
 # SK = 本 skill 的根目录。宿主加载 skill 时会告知（"Base directory for this skill: ..."），
@@ -90,7 +129,7 @@ PY=python
   **文字部分仍可放心用**（摘要、引言、证明的叙述性句子都是对的），但**任何公式、定理陈述、定理编号都必须以渲染图重读**。
   不要试图从这个文本层"猜"公式——会错，而且错得很隐蔽。
 
-### 第 2 步：分块读取（关键，决定质量上限）
+### 第 3 步：分块读取（关键，决定质量上限）
 
 **先抽文本拿结构，再对关键页出图核对。** 两条腿走路：
 
@@ -121,7 +160,7 @@ PY=python
 
 **内部结构笔记**：每读完一块，在草稿里记 3–5 行（本节目标 / 用到的引理 / 跳步位置）。不交付，但保证跨块一致——否则写到第 20 页就忘了第 5 页的记号。
 
-### 第 3 步：写正文（.tex）
+### 第 4 步：写正文（.tex 或 .md）
 
 ```bash
 cp "$SK/assets/template.tex" "<workdir>/01_brief.tex"
@@ -141,25 +180,32 @@ cp "$SK/assets/template.tex" "<workdir>/01_brief.tex"
 - 定理编号用 `\refo{(p.4, Theorem 1.2)}` 这种形式，让人能翻回原文。
 - 补证一律用 `proofbox`，跳步用 `gapbox`，不确定用 `warnbox`，别混用。
 
-### 第 4 步：编译
+### 第 5 步：编译
+
+**仅 `full` 档执行。** `markdown-only` / `host-read-only` 跳过本步，直接进第 6 步交付 `.md`。
 
 ```bash
 "$PY" "$SK/scripts/build_pdf.py" "<workdir>/01_brief.tex" --out "<workdir>/01_brief.pdf"
 ```
 
 成功返回 `{"ok": true, "pdf": ...}`。
-失败返回 `errors` + `log_tail`：按报错行号改 .tex 再编，**不要降级成 Markdown**。
+失败返回 `errors` + `log_tail`：按报错行号改 .tex 再编。
 典型病因已在 `hints` 字段里给了（裸下划线、缺宏包、字体）。
 
-### 第 5 步：交付
+**唯一的例外**：若失败原因是"本机没有 xelatex / 缺宏包"（而不是 .tex 写错），
+不要死磕，退回 `markdown-only` 的写法——把已写好的内容转成 Markdown 交付，
+并告诉用户装什么。**正文内容一个字都不要因为缺工具而缩水。**
 
-`present_files` 给出 PDF，然后 3–5 行说明：
+### 第 6 步：交付
+
+`present_files` 给出成品（`.pdf` 或 `.md`），然后 3–5 行说明：
 
 - 一句话结论（这篇干了什么）；
 - 我认为最值得注意的一点；
+- **若降级了，说明降级原因与恢复路径**（装什么、之后能否补出 PDF）；
 - 下一步建议（要不要 B/C）。
 
-**不要在聊天里复述整个 PDF 的内容**——用户点开就能看。
+**不要在聊天里复述整个内容**——用户点开就能看。
 
 ---
 
@@ -177,12 +223,15 @@ cp "$SK/assets/template.tex" "<workdir>/01_brief.tex"
 
 ## 环境依赖
 
-- **Python 3.9+，且该解释器能 `import pymupdf`**。多版本共存时先验证：
-  `python -c "import pymupdf"`；失败则换解释器或 `pip install pymupdf`。
-- **LaTeX**：需要 `xelatex` + `ctex` + `tcolorbox`（TinyTeX 或 TeX Live 均可）。
+**先跑 `scripts/doctor.py` 判定档位，不要假设环境齐全。** 三档能力差别见第 0 步。
+
+- **Python 3.9+，且该解释器能 `import pymupdf`**（`full` / `markdown-only` 档必需）。
+  多版本共存时先验证：`python -c "import pymupdf"`；失败则换解释器或 `pip install pymupdf`。
+- **LaTeX**（只有 `full` 档需要）：`xelatex` + `ctex` + `tcolorbox` + `booktabs` 等。
   - Windows 用 `fontset=windows`（模板默认）；Linux/macOS 编译前把模板里的
     `fontset=windows` 改成 `fontset=fandol`（随 ctex 分发），否则会因缺字体失败。
   - 若 `xelatex` 不在 PATH，`build_pdf.py` 会尝试常见安装路径（TinyTeX / MiKTeX / TeX Live）。
+  - **没有也能用**：降级为 Markdown 笔记，内容不打折，只是没有排版。
 - 联网：仅在需要核期刊分区、作者履历时使用；离线时相关内容应写"未检索到"。
 
 > **跨机器移植的硬规则**：`SKILL.md` 与所有脚本里**不许出现写死的用户主目录或
@@ -192,6 +241,7 @@ cp "$SK/assets/template.tex" "<workdir>/01_brief.tex"
 
 | 命令 | 用途 |
 |---|---|
+| `doctor.py` | 环境自检：输出档位（full / markdown-only / host-read-only）与安装命令 |
 | `prep.py info <pdf>` | 页数、元数据、书签、文本层质量、扫描件/双栏判断 |
 | `prep.py text <pdf> --pages 1-12 --clean --out f.txt` | 抽文本（带 `[p.N]` 标记） |
 | `prep.py render <pdf> --pages 3-5 --dpi 180 --out dir` | 渲染 PNG 供视觉核对 |
@@ -201,8 +251,10 @@ cp "$SK/assets/template.tex" "<workdir>/01_brief.tex"
 
 ## 交付前自检
 
+- [ ] 动手前跑过 `doctor.py`，并把档位告诉了用户？
 - [ ] 每条定理的编号、假设、指标都对着渲染图核过？
 - [ ] 所有推导都标了 `\yi` / `\bz` / `\ts` / `\gap`？
 - [ ] 期刊信息带来源和查询日期？作者信息区分了"自述"与"检索"？
-- [ ] 目录、页码、页眉正常？中文没有乱码/缺字？
-- [ ] .tex 保留在工作目录，用户可改？
+- [ ] 中文没有乱码/缺字？目录、页码、页眉正常（PDF 档）？
+- [ ] 降级时说明原因与恢复路径（装什么、能否补出 PDF）？
+- [ ] `.tex` / `.md` 源文件保留在工作目录，用户可改？

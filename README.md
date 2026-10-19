@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/1260709663/well-posed/actions/workflows/ci.yml/badge.svg)](https://github.com/1260709663/well-posed/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-1.1.1-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](CHANGELOG.md)
 [![Agent Skills](https://img.shields.io/badge/Agent%20Skills-compatible-8A2BE2.svg)](https://agentskills.io/specification)
 
 > 一个"适定"的数学论文阅读工具：**读得准、问得对、不胡说**。
@@ -13,7 +13,7 @@
 
 ![预览](docs/preview.png)
 
-> **维护状态**：v1.1.1（2026-10-19）。变更见 [CHANGELOG](CHANGELOG.md)，参与方式见 [CONTRIBUTING](CONTRIBUTING.md)。
+> **维护状态**：v1.2.0（2026-10-19）。变更见 [CHANGELOG](CHANGELOG.md)，参与方式见 [CONTRIBUTING](CONTRIBUTING.md)。
 > 发现某个模式在真实论文上失效，欢迎开 issue——**带论文名与页码的最小复现最有价值**。
 
 ---
@@ -65,14 +65,40 @@ git clone https://github.com/<your-name>/well-posed.git ~/.workbuddy/skills/well
 git clone https://github.com/<your-name>/well-posed.git .workbuddy/skills/well-posed
 ```
 
-## 依赖
+## 依赖：三种档位，缺东西也能用
 
-| 组件 | 说明 |
-|---|---|
-| Python 3.9+ | 需 `PyMuPDF`（`pip install pymupdf`） |
-| LaTeX | 任意带 `xelatex` 的发行版，需含 `ctex`、`tcolorbox`、`amsmath`、`booktabs` |
+先跑 `python scripts/doctor.py` 自检，它会告诉你本机属于哪一档，并给出安装命令。
 
-已测试环境：TinyTeX（Windows，`fontset=windows`）+ Python 3.13 + PyMuPDF。
+| 档位 | 条件 | 产出 | 内容质量 |
+|---|---|---|---|
+| **full** | Python 3.9+ / PyMuPDF / xelatex + `ctex` `tcolorbox` 等 | 排版好的 **PDF** | 完整 |
+| **markdown-only** | 有 Python + PyMuPDF，但没装 LaTeX | **Markdown** | 完整（公式、结构、标记都在，只是没排版） |
+| **host-read-only** | 连 PyMuPDF 都没有 | **Markdown** | 完整但更保守：失去公式编码检测，定理一律以页面视觉内容为准 |
+
+也就是说：**没装 LaTeX 不会让你失去内容，只失去排版**；连 Python 都没有，也还能靠 agent 自身的 PDF 阅读能力干活。
+
+### 安装
+
+```bash
+# 只补解析能力（markdown-only → full 的第一步）
+python -m pip install pymupdf
+
+# 补 LaTeX（按平台选一个）
+winget install --id=Distributions.TinyTeX          # Windows
+brew install --cask mactex-no-gui                  # macOS（或 brew install tectonic）
+sudo apt install texlive-xetex texlive-lang-chinese texlive-latex-extra   # Ubuntu
+```
+
+TinyTeX 是最小安装，缺宏包时用 `tlmgr install tcolorbox booktabs enumitem fancyhdr` 补。
+自己已经装了 TeX Live 也可以，`doctor.py` 会顺带检查 `ctex` 等宏包在不在。
+
+### 平台差异
+
+- **Windows** 用模板默认的 `fontset=windows`。
+- **Linux / macOS** 编译前把模板里的 `fontset=windows` 改成 `fontset=fandol`，
+  否则会因为找不到 Windows 字体而失败（CI 里就是这么做的）。
+
+已测试环境：TinyTeX（Windows）+ Python 3.13 + PyMuPDF 1.28。
 
 ---
 
@@ -150,7 +176,8 @@ $PY $SK/scripts/build_pdf.py note.tex --out note.pdf
 ├── scripts/
 │   ├── prep.py                   # PDF 体检 / 文本抽取 / 页面渲染
 │   ├── build_pdf.py              # xelatex 两遍编译，失败给可读报错
-│   └── validate_skill.py         # 校验 SKILL.md 合规性与内部引用完整性
+│   ├── validate_skill.py         # 校验 SKILL.md 合规性与内部引用完整性
+│   └── doctor.py                 # 环境自检：判定 full / markdown-only / host-read-only
 ├── .github/
 │   ├── workflows/ci.yml          # 规范校验 + 模板编译（ubuntu，fandol 字体）
 │   └── ISSUE_TEMPLATE/           # 问题与建议模板

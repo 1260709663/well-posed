@@ -28,7 +28,12 @@ jobs:
         run: python scripts/validate_skill.py .
 
       - name: 脚本语法检查
-        run: python -m py_compile scripts/prep.py scripts/build_pdf.py scripts/validate_skill.py
+        run: python -m py_compile scripts/prep.py scripts/build_pdf.py scripts/validate_skill.py scripts/doctor.py
+
+      - name: 环境自检冒烟（runner 上无 LaTeX，应判为 markdown-only 且不崩溃）
+        run: |
+          python scripts/doctor.py || true
+          python scripts/doctor.py --json | python -c "import sys,json; d=json.load(sys.stdin); assert d['level'] in ('full','markdown-only','host-read-only'); print('doctor level =', d['level'])"
 
       - name: 安装 PyMuPDF 并检查 prep.py 可运行
         run: |

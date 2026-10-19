@@ -1,16 +1,19 @@
 # 本地检查入口。Windows 下若无 make，直接用 python 跑 scripts/validate_skill.py
 PY ?= python
 
-.PHONY: check validate pycompile template clean
+.PHONY: check validate pycompile template doctor clean
 
 check: validate pycompile template ## 全部检查（提交前跑这个）
 	@echo "==> check 完成"
+
+doctor: ## 环境自检：本机能跑到哪一档
+	$(PY) scripts/doctor.py
 
 validate: ## 校验 SKILL.md 是否符合 Agent Skills 规范
 	$(PY) scripts/validate_skill.py .
 
 pycompile: ## 语法检查所有脚本
-	$(PY) -m py_compile scripts/prep.py scripts/build_pdf.py scripts/validate_skill.py
+	$(PY) -m py_compile scripts/prep.py scripts/build_pdf.py scripts/validate_skill.py scripts/doctor.py
 	@echo "==> py_compile 通过"
 
 template: ## 编译模板，确认 LaTeX 工具链可用
